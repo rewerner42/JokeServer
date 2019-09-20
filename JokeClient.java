@@ -9,7 +9,7 @@ HW 2: JokeClient
 public class JokeClient{
 
     static String requestJoke(String server){
-        
+        return "";
     }
 
     static String toText (byte ip[]) { //creates a 128 bit format
