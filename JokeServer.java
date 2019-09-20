@@ -1,28 +1,26 @@
-/*
-18.09.2019
+/*--------------------------------------------
+1. Name / Date: 
 Werner Reineke-Ryskiewicz
-CSC 435 - 701
-Professor Clark Elliott
-HW 2: 
+18.09.2019
 
-JokeServer
+2. Java Version Used: 1.8.0_211-b12
+
+3. you may compile this code as follows: 
+javac JokeServer.java
+
+4.If you wish to run this particular piece of hardware open a terminal and after comilation type:
+$java JokeServer [secondary]
+
+5. To run the Server you only require this file. However, to use its services you require the Client.
+How to specifically use this program please read JokeClient.java.
+
+6. Notes:
+
+This is the JokeServer
 
 Version 1.0
 
-you may compile this code as follows: 
-javac JokeServer.java
-
-If you wish to run this particular piece of hardware open a terminal and after comilation type:
-$java JokeServer [secondary]
-
-To run the Server you only require this file. However, to use its services you require the Client.
-How to specifically use this program please read JokeClient.java.
-
-Notes:
----
-
-
-*/
+-----------------------------------------------*/
 
 import java.io.*;   // importing the java input and output libraries will help displaying text to the termianl and also taking inputs from the user
 import java.net.*;  //networking libraries packages are usefull for any types of networking and mainly for transfering data from this server to the client and recieving the requests sent by it
