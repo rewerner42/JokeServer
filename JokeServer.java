@@ -6,8 +6,19 @@ Professor Clark Elliott
 HW 2: JokeServer
 */
 
-import java.io.*;   //importing io libraries
+import java.io.*;   //importin___+g io libraries
 import java.net.*;  //networking libraries are imported
+
+class Randomizer extends Thread{
+    Socket sock;
+    Randomizer(Socket s){
+        sock = s;
+    }
+
+    public void run(){
+
+    }
+}
 
 public class JokeServer{
 
@@ -16,7 +27,6 @@ public class JokeServer{
     }
     public static void main(String args[]) throws IOException{
 
-        Socket s; // create a socket where for later handing over of socket to 
         String type;
         int portNo;
 
@@ -38,7 +48,8 @@ public class JokeServer{
 
         while(true){
             System.out.println("Waiting for incomming request....");
-            s = ss.accept(); // the programm waits at this position for an incoming connection only when someone connects will the sofware keep running
+            
+            new Randomizer(ss.accept()).start(); // the programm waits at this position for an incoming connection only when someone connects will the sofware keep running
 
             break;
         }
