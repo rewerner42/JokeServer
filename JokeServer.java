@@ -30,10 +30,19 @@ import java.math.random; // because this server is required to send random jokes
 
 
 class Randomizer extends Thread{
+
     Socket sock;
-    String jokeLib[] = new String [4];
-    jokeLib[0] = ""
-    String proverbLib[] = new String [4];
+    static String jokeLib[] = new String [4];
+    jokeLib[0] = "Dentist: You need a crown. - Patient: Finally someone who understands me.";
+    jokeLib[1] = "Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!";
+    jokeLib[2] = "I hate Russian dolls, they're always so full of themselves.";
+    jokeLib[3] = "I like to hold hands at the movies....for some reason it always seems to startle strangers.";
+    static String proverbLib[] = new String [4];
+    proverbLib[0] = "Alea Iacta Est.";
+    proverbLib[1] = "Amat Victoria Curam.";
+    proverbLib[2] = "Veni. Vidi. Vici.";
+    proverbLib[3] = "Credo, Ergo Sum.";
+
     Randomizer(Socket s){
         sock = s;
     }
@@ -45,7 +54,7 @@ class Randomizer extends Thread{
             try{
                 String requestType = in.readLine();
                 System.out.println("Generating very amazing "+requestType+"!...");
-                serve(requestType);
+                serve(requestType,out);
             }
             catch(IOException read){
                 System.out.println("Server read error has occurred!"); // informing the user what type of error has occurred and where to find it
@@ -59,32 +68,34 @@ class Randomizer extends Thread{
 
     }
 
-    static void serve(String jokeOrPro){
+    private static void serve(String jokeOrPro,PrintStream out){
         if(jokeOrPro.eqauls("joke")){
-            sendJoke();
+            sendJoke(out);
+
         }
         else{
-            sendProverb();
+            sendProverb(out);
         }
     }
 
-    static void sendProverb(){
-
+    private static void sendProverb(PrintStream out){
+        out.println("You requested a Joke:");
+        out.println(jokeLib[getRandomNo(4)]);
     }
 
-    static void sendJoke(){
-
-
+    private static void sendJoke(PrintStream out){
+        out.println("You requested a Proverb:");
+        out.println(proverbLib[getRandomNo(4)]);
     }
 
-    static String getRandomNo(int n){
+    private static String getRandomNo(int n){
         return (int)(Math.random()*n);
     }
 }
 
 public class JokeServer{
 
-    static void doWork(String w){
+    private static void doWork(String w){
         System.out.println("hello mofo" + w);
     }
     public static void main(String args[]) throws IOException{
