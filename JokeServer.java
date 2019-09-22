@@ -40,11 +40,13 @@ class AdminListener extends Thread{
 class Randomizer extends Thread{
 
     Socket sock;
+    static String state;
     static String[] jokeLib = {"I like to hold hands at the movies....for some reason it always seems to startle strangers.","I hate Russian dolls, they're always so full of themselves.","Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!","Dentist: You need a crown. - Patient: Finally someone who understands me."};
     static String proverbLib[] = {"Credo, Ergo Sum.","Veni. Vidi. Vici.","Amat Victoria Curam.","Alea Iacta Est."};
 
-    Randomizer(Socket s){
+    Randomizer(Socket s, String str){
         sock = s;
+        state = str;
     }
 
     public void run(){
@@ -52,8 +54,8 @@ class Randomizer extends Thread{
             PrintStream out = new PrintStream(sock.getOutputStream()); 
             BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             try{
-                String requestType = in.readLine();
-                serve("joke",out);
+                String chocolateChipCookie = in.readLine();
+                serve(chocolateChipCookie,out);
             }
             catch(IOException read){
                 System.out.println("Server read error has occurred!"); // informing the user what type of error has occurred and where to find it
@@ -67,29 +69,67 @@ class Randomizer extends Thread{
 
     }
 
-    private static void serve(String jokeOrPro,PrintStream out){
-            if(jokeOrPro.equals("joke")){
-                sendJoke(out);
+    private static void serve(String data,PrintStream out){
+            if(state.equals("joke")){
+                sendJoke(out,data);
             }
             else{
-                sendProverb(out);
+                sendProverb(out,data);
             }
     }
 
-    private static void sendJoke(PrintStream out){
-        System.out.println("Sending Joke.");
-        out.println("You requested a Joke:");
-        int jokeLetter = getRandomNo(4);
-        out.println("J"+(char)(jokeLetter+65)+" ");
-        out.println(" " + jokeLib[jokeLetter]);
+    private static String [] chooseJoke(String data){
+        String[] tempIndex = new String[4]; 
+        String[] tempJokes = new String[4];
+        String[] index = {"JA","JB","JC","JD"};
+        int read = 0;
+        int wright = 0;
+        for(String i : index){
+            if(!data.contains(i)){
+                tempJokes[wright]=jokeLib[read];
+                wright++;
+            }
+            read++;
+        }
+        int rand = getRandomNo(wright);
+        String[]ret = {tempJokes[rand],tempIndex[rand]};
+        return ret;
+    }
+    
+    private static String [] chooseProverb(String data){
+        String[] tempIndex = new String[4];
+        String[] tempProv = new String[4];
+        String[] index = {"PA","PB","PC","PD"};
+        int read = 0;
+        int wright = 0;
+        for(String i : index){
+            if(!data.contains(i)){
+                tempProv[wright]=proverbLib[read];
+                tempIndex[wright]=index[read];
+                wright++;
+            }
+            read++;
+        }
+        int rand = getRandomNo(wright);
+        String[]ret = {tempProv[rand],tempIndex[rand]};
+        return ret;
     }
 
-    private static void sendProverb(PrintStream out){
+
+    private static void sendJoke(PrintStream out, String data){
+        System.out.println("Sending Joke.");
+        out.println("You requested a Joke:");
+        String[] nData = chooseJoke(data);
+        out.println(nData[1]+" ");
+        out.println(" " + nData[0]);
+    }
+
+    private static void sendProverb(PrintStream out, String data){
         System.out.println("Sending Proverb.");
         out.println("You requested a Proverb:");
-        int provLetter = getRandomNo(4);
-        out.print("P"+(char)(provLetter+65)+" ");
-        out.println(" " + proverbLib[provLetter]);
+        String[] nData = chooseProverb(data);
+        out.print(nData[1]+" ");
+        out.println(" " + nData[0]);
     }
 
     private static int getRandomNo(int n){
@@ -99,8 +139,19 @@ class Randomizer extends Thread{
 
 public class JokeServer{
 
+    private static String state = "joke";
+
     private static void doWork(String w){
         System.out.println("hello mofo" + w);
+    }
+
+    public static void swapState(){
+        if(state == "joke"){
+            state = "proverb";
+        }
+        else{
+            state = "joke";
+        }
     }
     public static void main(String args[]) throws IOException{
 
@@ -122,9 +173,9 @@ public class JokeServer{
         System.out.println("\n   Reineke JokeServer 1.0 \n   Now running as a "+type+" Server on Port: "+portNo+".\n");
         
         ServerSocket ss = new ServerSocket(portNo,6);
-
+        
         while(true){
-            new Randomizer(ss.accept()).start(); // the programm waits at this position for an incoming connection only when someone connects will the sofware keep running pass it on the Randomizer who will in turn return a random joke or proverb depending on the clients choice entertain the user to the utmost extent
+            new Randomizer(ss.accept(),state).start(); // the programm waits at this position for an incoming connection only when someone connects will the sofware keep running pass it on the Randomizer who will in turn return a random joke or proverb depending on the clients choice entertain the user to the utmost extent
         }
     }
 }
