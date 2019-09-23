@@ -28,12 +28,47 @@ import java.math.*; // because this server is required to send random jokes we w
 
 class AdminListener extends Thread{
     int portNum;
+    int jServer;
+    static String status = "joke";
     AdminListener(int port){
         portNum = port;
+        if(portNum == 5050){
+            jServer = 4545;
+        }
+        else{
+            jServer = 4546;
+        }
     }
 
-    public void run(){
+    public static String getStatus(){
+        return status;
+    }
 
+    private static void swapState(){
+        if(status == "joke"){
+            status = "proverb";
+        }
+        else{
+            status = "joke";
+        }
+    }
+    public void run(){
+        try{
+            ServerSocket ss = new ServerSocket(portNum,6);
+            while(true){
+                ss.accept();
+                BufferedReader in = new BufferedReader(new InputStreamReader(ss.getInputStream()));
+                if(in.readLine().equals("quit")){
+                    break;
+                }
+                swapState();
+            }
+            Socket closer  = new Socket("localhost",);
+            ss.close();
+        }
+        catch(IOException exc){
+            System.out.println(exc); // this might catch the socket being closed too early by faulty code. As always catching this exception will be helpful in discovering errors in the code
+        }
     }
 }
 
@@ -41,12 +76,14 @@ class Randomizer extends Thread{
 
     Socket sock;
     static String state;
+    AdminListener stat;
     static String[] jokeLib = {"I like to hold hands at the movies....for some reason it always seems to startle strangers.","I hate Russian dolls, they're always so full of themselves.","Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!","Dentist: You need a crown. - Patient: Finally someone who understands me."};
     static String proverbLib[] = {"Credo, Ergo Sum.","Veni. Vidi. Vici.","Amat Victoria Curam.","Alea Iacta Est."};
 
-    Randomizer(Socket s, String str){
+    Randomizer(Socket s, String str,AdminListener status){
         sock = s;
         state = str;
+        stat = status;
     }
 
     public void run(){
@@ -70,7 +107,7 @@ class Randomizer extends Thread{
     }
 
     private static void serve(String data,PrintStream out){
-            if(state.equals("joke")){
+            if(stat.getState().equals("joke")){
                 sendJoke(out,data);
             }
             else{
@@ -87,12 +124,21 @@ class Randomizer extends Thread{
         for(String i : index){
             if(!data.contains(i)){
                 tempJokes[wright]=jokeLib[read];
+                tempIndex[wright]=i;
                 wright++;
             }
             read++;
         }
         int rand = getRandomNo(wright);
-        String[]ret = {tempJokes[rand],tempIndex[rand]};
+        String[]ret = new String[2];
+        if(wright>1){  
+            ret[0] = tempJokes[rand];
+            ret[1] = tempIndex[rand];
+        }
+        else{
+            ret[0] = tempJokes[rand]+"\nJOKE CYCLE COMPLETED\n";
+            ret[1] = tempIndex[rand];
+        }
         return ret;
     }
     
@@ -105,31 +151,37 @@ class Randomizer extends Thread{
         for(String i : index){
             if(!data.contains(i)){
                 tempProv[wright]=proverbLib[read];
-                tempIndex[wright]=index[read];
+                tempIndex[wright]=i;
                 wright++;
             }
             read++;
         }
         int rand = getRandomNo(wright);
-        String[]ret = {tempProv[rand],tempIndex[rand]};
+        String[]ret = new String[2];
+        if(wright>1){  
+            ret[0] = tempProv[rand];
+            ret[1] = tempIndex[rand];
+        }
+        else{
+            ret[0] = tempProv[rand]+"\nPROVERB CYCLE COMPLETED\n";
+            ret[1] = tempIndex[rand];
+        }
         return ret;
     }
 
 
     private static void sendJoke(PrintStream out, String data){
         System.out.println("Sending Joke.");
-        out.println("You requested a Joke:");
         String[] nData = chooseJoke(data);
         out.println(nData[1]+" ");
-        out.println(" " + nData[0]);
+        out.println(": " + nData[0]);
     }
 
     private static void sendProverb(PrintStream out, String data){
         System.out.println("Sending Proverb.");
-        out.println("You requested a Proverb:");
         String[] nData = chooseProverb(data);
         out.print(nData[1]+" ");
-        out.println(" " + nData[0]);
+        out.println(": " + nData[0]);
     }
 
     private static int getRandomNo(int n){
@@ -141,26 +193,17 @@ public class JokeServer{
 
     private static String state = "joke";
 
-    private static void doWork(String w){
-        System.out.println("hello mofo" + w);
-    }
 
-    public static void swapState(){
-        if(state == "joke"){
-            state = "proverb";
-        }
-        else{
-            state = "joke";
-        }
-    }
     public static void main(String args[]) throws IOException{
 
         String type;
         int portNo;
+        AdminListener controller;
 
         if(args.length>0 && args[0].toString().equals("secondary")){
             portNo = 4546;
             type = "secondary";
+            controller = new AdminListener(5050).start();
         }
         else if(args.length>0 && !args[0].toString().equals("secondary")){
             System.out.println("Usage: $java JokeServer [secondary] \nTerminating Server.");
@@ -169,12 +212,15 @@ public class JokeServer{
         else{
             portNo = 4545;
             type = "primary";
+            controller = new AdminListener(5051).start();
         }
         System.out.println("\n   Reineke JokeServer 1.0 \n   Now running as a "+type+" Server on Port: "+portNo+".\n");
         
+        
+
         ServerSocket ss = new ServerSocket(portNo,6);
         
-        while(true){
+        while(controller.isAlive())
             new Randomizer(ss.accept(),state).start(); // the programm waits at this position for an incoming connection only when someone connects will the sofware keep running pass it on the Randomizer who will in turn return a random joke or proverb depending on the clients choice entertain the user to the utmost extent
         }
     }

@@ -34,6 +34,27 @@ public class JokeClient{
 
     private static String cookie = "";
 
+    private static void polishCookie(String whatToClean){
+        String temp = "";
+        String [] jokes = {"JA","JB","JC","JD"};
+        String [] prov = {"PA","PB","PC","PD"};
+        String[] cleaning = new String[4];
+        if(whatToClean == "PROVERB"){
+            cleaning = jokes;
+        }
+        else{
+            cleaning = prov;
+        }
+        
+        for(String i: cleaning){
+            if(cookie.contains(i)){
+                temp+=i;
+            }
+        }
+
+        cookie = temp;
+    }
+
     static void requestJoke(String server,int port, String name){
         Socket sock;
         BufferedReader from;
@@ -48,19 +69,24 @@ public class JokeClient{
             to.flush();
 
             int i = 0;
-            while(i<3){
+            while(i<4){
                 incoming = from.readLine();
                 if(incoming!=null){
-                    if(incoming.indexOf("J")==0 || incoming.indexOf("P")==0){
+                    if(incoming.equals("JOKE CYCLE COMPLETED")){
+                        polishCookie("JOKE");
+                        System.out.println(incoming);
+                    }
+                    else if(incoming.equals("PROVERB CYCLE COMPLETED")){
+                        polishCookie("PROVERB");
+                        System.out.println(incoming);
+                    }
+                    else if(incoming.indexOf("J")==0 || incoming.indexOf("P")==0){
                         System.out.print(incoming+name);
                         cookie += incoming;
                     }
                     else{
                         System.out.println(incoming);
-                    }/*
-                    if( i == 1){
-                        System.out.print(name);
-                    }*/
+                    }
                 }
                 i++;
             }
@@ -120,6 +146,7 @@ public class JokeClient{
 
             do{
                 System.out.flush();
+                System.out.print("[Press Enter for request.]");
                 type = in.readLine();
                 if(type.indexOf("quit")<0){
                     if (type.equals("s")){
@@ -131,6 +158,7 @@ public class JokeClient{
                         else{
                             connectToPort = primaryPort;
                             connectToServer = primaryServer;
+                            System.out.println("Now communicating with: "+connectToServer+", port "+connectToPort);
                         }
                     }
                     else{
