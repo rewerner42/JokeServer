@@ -63,7 +63,6 @@ class AdminListener extends Thread{
                 }
                 swapState();
             }
-            Socket closer  = new Socket("localhost",);
             ss.close();
         }
         catch(IOException exc){
