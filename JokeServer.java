@@ -74,14 +74,12 @@ class AdminListener extends Thread{
 class Randomizer extends Thread{
 
     Socket sock;
-    static String state;
     AdminListener stat;
     static String[] jokeLib = {"I like to hold hands at the movies....for some reason it always seems to startle strangers.","I hate Russian dolls, they're always so full of themselves.","Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!","Dentist: You need a crown. - Patient: Finally someone who understands me."};
     static String proverbLib[] = {"Credo, Ergo Sum.","Veni. Vidi. Vici.","Amat Victoria Curam.","Alea Iacta Est."};
 
-    Randomizer(Socket s, String str,AdminListener status){
+    Randomizer(Socket s,AdminListener status){
         sock = s;
-        state = str;
         stat = status;
     }
 
@@ -190,9 +188,6 @@ class Randomizer extends Thread{
 
 public class JokeServer{
 
-    private static String state = "joke";
-
-
     public static void main(String args[]) throws IOException{
 
         String type;
@@ -202,7 +197,7 @@ public class JokeServer{
         if(args.length>0 && args[0].toString().equals("secondary")){
             portNo = 4546;
             type = "secondary";
-            controller = new AdminListener(5050).start();
+            controller = new AdminListener(5050);
         }
         else if(args.length>0 && !args[0].toString().equals("secondary")){
             System.out.println("Usage: $java JokeServer [secondary] \nTerminating Server.");
@@ -211,16 +206,17 @@ public class JokeServer{
         else{
             portNo = 4545;
             type = "primary";
-            controller = new AdminListener(5051).start();
+            controller = new AdminListener(5051);
         }
         System.out.println("\n   Reineke JokeServer 1.0 \n   Now running as a "+type+" Server on Port: "+portNo+".\n");
         
         
 
         ServerSocket ss = new ServerSocket(portNo,6);
+        controller.start();
         
-        while(controller.isAlive())
-            new Randomizer(ss.accept(),state).start(); // the programm waits at this position for an incoming connection only when someone connects will the sofware keep running pass it on the Randomizer who will in turn return a random joke or proverb depending on the clients choice entertain the user to the utmost extent
+        while(controller.isAlive()){
+            new Randomizer(ss.accept(),controller).start(); // the programm waits at this position for an incoming connection only when someone connects will the sofware keep running pass it on the Randomizer who will in turn return a random joke or proverb depending on the clients choice entertain the user to the utmost extent
         }
     }
 }
