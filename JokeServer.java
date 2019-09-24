@@ -56,8 +56,8 @@ class AdminListener extends Thread{
         try{
             ServerSocket ss = new ServerSocket(portNum,6);
             while(true){
-                ss.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(ss.getInputStream()));
+                Socket temp = ss.accept();
+                BufferedReader in = new BufferedReader(new InputStreamReader(temp.getInputStream()));
                 if(in.readLine().equals("quit")){
                     break;
                 }
@@ -74,7 +74,7 @@ class AdminListener extends Thread{
 class Randomizer extends Thread{
 
     Socket sock;
-    AdminListener stat;
+    static AdminListener stat;
     static String[] jokeLib = {"I like to hold hands at the movies....for some reason it always seems to startle strangers.","I hate Russian dolls, they're always so full of themselves.","Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!","Dentist: You need a crown. - Patient: Finally someone who understands me."};
     static String proverbLib[] = {"Credo, Ergo Sum.","Veni. Vidi. Vici.","Amat Victoria Curam.","Alea Iacta Est."};
 
