@@ -29,7 +29,7 @@ import java.math.*; // because this server is required to send random jokes we w
 class AdminListener extends Thread{
     int portNum;
     int jServer;
-    static String status = "joke";
+    static String status = "Joke";
     AdminListener(int port){
         portNum = port;
         if(portNum == 5050){
@@ -40,17 +40,18 @@ class AdminListener extends Thread{
         }
     }
 
-    public static String getStatus(){
+    public String getStatus(){
         return status;
     }
 
     private static void swapState(){
-        if(status == "joke"){
-            status = "proverb";
+        if(status == "Joke"){
+            status = "Proverb";
         }
         else{
-            status = "joke";
+            status = "Joke";
         }
+        System.out.println("Swapping to "+status+" mode.");
     }
     public void run(){
         try{
@@ -58,10 +59,12 @@ class AdminListener extends Thread{
             while(true){
                 Socket temp = ss.accept();
                 BufferedReader in = new BufferedReader(new InputStreamReader(temp.getInputStream()));
-                if(in.readLine().equals("quit")){
+                if(in.readLine().equals("shutdown")){
                     break;
                 }
+                PrintStream out = new PrintStream(temp.getOutputStream()); 
                 swapState();
+                out.println(status + "Mode.");
             }
             ss.close();
         }
@@ -104,7 +107,7 @@ class Randomizer extends Thread{
     }
 
     private static void serve(String data,PrintStream out){
-            if(stat.getState().equals("joke")){
+            if(stat.getStatus().equals("Joke")){
                 sendJoke(out,data);
             }
             else{
@@ -192,12 +195,13 @@ public class JokeServer{
 
         String type;
         int portNo;
+        int contPort;
         AdminListener controller;
 
         if(args.length>0 && args[0].toString().equals("secondary")){
             portNo = 4546;
             type = "secondary";
-            controller = new AdminListener(5050);
+            contPort = 5051;
         }
         else if(args.length>0 && !args[0].toString().equals("secondary")){
             System.out.println("Usage: $java JokeServer [secondary] \nTerminating Server.");
@@ -206,13 +210,14 @@ public class JokeServer{
         else{
             portNo = 4545;
             type = "primary";
-            controller = new AdminListener(5051);
+            contPort = 5050;
         }
         System.out.println("\n   Reineke JokeServer 1.0 \n   Now running as a "+type+" Server on Port: "+portNo+".\n");
         
         
 
         ServerSocket ss = new ServerSocket(portNo,6);
+        controller = new AdminListener(contPort);
         controller.start();
         
         while(controller.isAlive()){

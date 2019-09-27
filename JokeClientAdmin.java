@@ -22,9 +22,102 @@ Version 1.0
 
 -----------------------------------------------*/
 
+import java.io.*;
+import java.net.*;
 
 public class JokeClientAdmin{
-    public static void main(String args[]){
 
+    static void toggle(String server,int port,String data){
+        Socket sock;
+        BufferedReader from;
+        PrintStream to;
+        try{
+            sock = new Socket(server,port);
+            from = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            to = new PrintStream(sock.getOutputStream());
+
+            to.println(data);
+            to.flush();
+
+            String incoming;
+            incoming = from.readLine();
+            System.out.println(incoming);
+
+            sock.close();
+        }
+        catch(IOException exc){
+            System.out.println("Socket Error.");
+            exc.printStackTrace();
+        }
+    }
+
+    public static void main(String args[]){
+        int primaryPort = 5050;
+        String primaryServer = "localhost";
+        int secondaryPort = 5051;
+        String secondaryServer = "localhost";
+
+        int connectToPort;
+        String connectToServer;
+
+        if(args.length < 1){
+            connectToServer = primaryServer;
+            connectToPort = primaryPort;
+        }
+        else if(args.length < 2){
+            primaryServer = args[0];
+            connectToServer = primaryServer;
+            connectToPort = primaryPort;    
+        }
+        else if (args.length < 3){
+            primaryServer = args[0];
+            secondaryServer = args[1];
+            connectToServer = primaryServer;
+            connectToPort = primaryPort;    
+        }
+        else{
+            System.out.println("Usage: $java JokeClientAdmin [ipaddr] [ipaddr]\n\n Terminating Program\n");
+            return;
+        }
+
+        System.out.println("Werner's Joke Client Admin is running!");
+        System.out.println("type [quit] to quit program!\n");
+
+        System.out.println("Server one: "+ primaryServer + ", port "+primaryPort);
+        System.out.println("Server two: "+ secondaryServer + ", port "+secondaryPort);
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        String type;
+        try{
+
+            do{
+                System.out.flush();
+                System.out.print("Press [Enter] to toggle Joke/Proverb mode. Type [shutdown] to power off Server.");
+                type = in.readLine();
+                if(type.indexOf("quit")<0){
+                    if (type.equals("s")){
+                        if(connectToPort == primaryPort){
+                            connectToPort = secondaryPort;
+                            connectToServer = secondaryServer;
+                            System.out.println("Now communicating with: "+connectToServer+", port "+connectToPort);
+                        }
+                        else{
+                            connectToPort = primaryPort;
+                            connectToServer = primaryServer;
+                            System.out.println("Now communicating with: "+connectToServer+", port "+connectToPort);
+                        }
+                    }
+                    else{
+                        toggle(connectToServer,connectToPort,type);
+                    }
+                }
+
+            }while(type.indexOf("quit")<0);
+            
+        }
+        catch(IOException exc){
+            exc.printStackTrace();
+        }
     }
 }
