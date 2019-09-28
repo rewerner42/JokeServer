@@ -82,6 +82,8 @@ public class JokeClientAdmin{
 
         System.out.println("Werner's Joke Client Admin is running!");
         System.out.println("type [quit] to quit program!\n");
+        System.out.println("Press [Enter] to toggle Joke/Proverb mode.");
+        System.out.println("Type [shutdown] to power off Server.");
 
         System.out.println("Server one: "+ primaryServer + ", port "+primaryPort);
         System.out.println("Server two: "+ secondaryServer + ", port "+secondaryPort);
@@ -93,7 +95,6 @@ public class JokeClientAdmin{
 
             do{
                 System.out.flush();
-                System.out.print("Press [Enter] to toggle Joke/Proverb mode. Type [shutdown] to power off Server.");
                 type = in.readLine();
                 if(type.indexOf("quit")<0){
                     if (type.equals("s")){

@@ -26,6 +26,26 @@ import java.io.*;   // importing the java input and output libraries will help d
 import java.net.*;  //networking libraries packages are usefull for any types of networking and mainly for transfering data from this server to the client and recieving the requests sent by it
 import java.math.*; // because this server is required to send random jokes we will use the random function from the math library to generate quasi-random numbers
 
+class Closer extends Thread{
+    int closerPort ;
+    Closer(int port){
+        closerPort = port;
+    }
+
+    public void run(){
+       try{ 
+            Socket sock = new Socket("localhost",closerPort);
+            PrintStream out = new PrintStream(sock.getOutputStream());
+            out.println("off");
+            sock.close();
+        }
+        catch(IOException exc){
+            System.out.println("Socket Error.");
+            exc.printStackTrace();
+        }
+    }
+}
+
 class AdminListener extends Thread{
     int portNum;
     int jServer;
@@ -60,17 +80,19 @@ class AdminListener extends Thread{
                 Socket temp = ss.accept();
                 BufferedReader in = new BufferedReader(new InputStreamReader(temp.getInputStream()));
                 if(in.readLine().equals("shutdown")){
+                    System.out.println("Shutting Down Joke Server.");
                     break;
                 }
                 PrintStream out = new PrintStream(temp.getOutputStream()); 
                 swapState();
-                out.println(status + "Mode.");
+                out.println(status + " Mode.");
             }
             ss.close();
         }
         catch(IOException exc){
             System.out.println(exc); // this might catch the socket being closed too early by faulty code. As always catching this exception will be helpful in discovering errors in the code
         }
+        new Closer(jServer).start();
     }
 }
 
@@ -92,7 +114,9 @@ class Randomizer extends Thread{
             BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             try{
                 String chocolateChipCookie = in.readLine();
-                serve(chocolateChipCookie,out);
+                if(!chocolateChipCookie.equals("off")){
+                    serve(chocolateChipCookie,out);
+                }
             }
             catch(IOException read){
                 System.out.println("Server read error has occurred!"); // informing the user what type of error has occurred and where to find it
@@ -139,7 +163,7 @@ class Randomizer extends Thread{
             ret[0] = tempJokes[rand]+"\nJOKE CYCLE COMPLETED\n";
             ret[1] = tempIndex[rand];
         }
-        return ret;
+        return ret; 
     }
     
     private static String [] chooseProverb(String data){
@@ -180,7 +204,7 @@ class Randomizer extends Thread{
     private static void sendProverb(PrintStream out, String data){
         System.out.println("Sending Proverb.");
         String[] nData = chooseProverb(data);
-        out.print(nData[1]+" ");
+        out.println(nData[1]+" ");
         out.println(": " + nData[0]);
     }
 
