@@ -1,0 +1,228 @@
+Werners-MacBook-Air:JokeServer wernerreineke$ java JokeClientAdmin localhost localhost // this demonstates the input of two variables to the JokeClientAdmin
+Werner's Joke Client Admin is running!
+type [quit] to quit program!
+Press [Enter] to toggle Joke/Proverb mode.
+Type [shutdown] to power off Server.
+Server one: localhost, port 5050
+Server two: localhost, port 5051
+
+s //swapping back and forth from both servers and informing on both of the connections
+Now communicating with: localhost, port 5051
+s
+Now communicating with: localhost, port 5050
+ //enter for switching modes
+Proverb Mode.
+s
+Now communicating with: localhost, port 5051
+//enter for switching modes
+Proverb Mode.
+s
+Now communicating with: localhost, port 5050
+//enter for switching modes
+Joke Mode.
+//enter for switching modes
+Proverb Mode.
+//enter for switching modes
+Joke Mode.
+s
+Now communicating with: localhost, port 5051
+shutdown //shutdown command secondary server
+quit
+Werners-MacBook-Air:JokeServer wernerreineke$ java JokeClientAdmin localhost localhost //forgot to shutdown other server
+Werner's Joke Client Admin is running!
+type [quit] to quit program!
+Press [Enter] to toggle Joke/Proverb mode.
+Type [shutdown] to power off Server.
+Server one: localhost, port 5050
+Server two: localhost, port 5051
+
+shutdown // shutdown second server
+quit
+
+
+Werners-MacBook-Air:JokeServer wernerreineke$ java JokeServer secondary
+
+   Reineke JokeServer 1.0 
+   Now running as a secondary Server on Port: 4546.
+
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Swapping to Proverb mode. //swapped to proverb mode
+Sending Proverb.
+Sending Proverb.
+Sending Proverb.
+Sending Proverb.
+Sending Proverb.
+Shutting Down Joke Server. // server was shutdwon
+
+Werners-MacBook-Air:JokeServer wernerreineke$ java JokeServer
+
+   Reineke JokeServer 1.0 
+   Now running as a primary Server on Port: 4545.
+
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke. // mostly the Joke server says what its doing
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Sending Joke.
+Swapping to Proverb mode. //swapped to proverb mode
+Sending Proverb.
+Sending Proverb.
+Sending Proverb.
+Sending Proverb.
+Sending Proverb.
+Sending Proverb.
+Swapping to Joke mode.
+Swapping to Proverb mode.// swapping back and forth to test that again
+Swapping to Joke mode.
+Shutting Down Joke Server.
+
+
+Werners-MacBook-Air:JokeServer wernerreineke$ java JokeClient // JokeClient with no arguments
+Werner's Joke Client is running!
+type [quit] to quit program!
+Server one: localhost, port 4545
+Server two: localhost, port 4546
+
+Please enter username: Francis //enter a username
+
+JB Francis: I hate Russian dolls, they're always so full of themselves.
+
+JA Francis: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+s
+Now communicating with: localhost, port 4546 // switching from primary to secondary server both running on jokes
+
+<S2>JC Francis: Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!
+
+<S2>JD Francis: Dentist: You need a crown. - Patient: Finally someone who understands me.
+JOKE CYCLE COMPLETED // every joke sent once cycle done
+
+s
+Now communicating with: localhost, port 4545// swapping back and forth still working
+s
+Now communicating with: localhost, port 4546
+
+<S2>JD Francis: Dentist: You need a crown. - Patient: Finally someone who understands me.
+
+<S2>JC Francis: Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!
+s
+Now communicating with: localhost, port 4545
+
+JA Francis: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+
+PC Francis: Amat Victoria Curam. // swapped servermode thus now proverbs
+
+PB Francis: Veni. Vidi. Vici.
+
+PA Francis: Credo, Ergo Sum.
+s // swapping server to get more Jokes
+Now communicating with: localhost, port 4546
+
+<S2>JB Francis: I hate Russian dolls, they're always so full of themselves.
+JOKE CYCLE COMPLETED // last joke so cookie maintained across multiple servers with multiple different modes
+
+
+<S2>JA Francis: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+
+<S2>PD Francis: Alea Iacta Est.
+PROVERB CYCLE COMPLETED // both cycles complete after server mode swapping again so cookie holding in all eventualities
+
+quit
+
+
+Werners-MacBook-Air:JokeServer wernerreineke$ java JokeClient localhost localhost // jokeClient with two arguments also working 
+Werner's Joke Client is running!
+type [quit] to quit program!
+Server one: localhost, port 4545
+Server two: localhost, port 4546
+
+Please enter username: Werner
+
+PA Werner: Credo, Ergo Sum.
+
+PD Werner: Alea Iacta Est.
+
+PC Werner: Amat Victoria Curam.
+s
+Now communicating with: localhost, port 4546
+
+<S2>JA Werner: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+
+<S2>JD Werner: Dentist: You need a crown. - Patient: Finally someone who understands me.
+
+<S2>PB Werner: Veni. Vidi. Vici.
+PROVERB CYCLE COMPLETED // cycle completes correcly even after server switch and mode switch
+
+
+<S2>PA Werner: Credo, Ergo Sum.
+
+<S2>PB Werner: Veni. Vidi. Vici.
+quit
+//quit command works too
+Werners-MacBook-Air:JokeServer wernerreineke$ java JokeClient localhost // JokeClient with one argument
+Werner's Joke Client is running!
+type [quit] to quit program!
+Server one: localhost, port 4545
+Server two: localhost, port 4546
+
+Please enter username: Johannes
+
+JC Johannes: Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!
+
+JB Johannes: I hate Russian dolls, they're always so full of themselves.
+
+JA Johannes: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+
+JD Johannes: Dentist: You need a crown. - Patient: Finally someone who understands me.
+JOKE CYCLE COMPLETED
+
+
+JB Johannes: I hate Russian dolls, they're always so full of themselves.
+
+JA Johannes: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+
+JC Johannes: Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!
+
+JD Johannes: Dentist: You need a crown. - Patient: Finally someone who understands me.
+JOKE CYCLE COMPLETED
+ //cycles complete and can be rerun 
+s
+Now communicating with: localhost, port 4546
+
+<S2>JC Johannes: Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!
+
+<S2>JA Johannes: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+
+<S2>JD Johannes: Dentist: You need a crown. - Patient: Finally someone who understands me.
+
+<S2>JB Johannes: I hate Russian dolls, they're always so full of themselves.
+JOKE CYCLE COMPLETED // this also works for server 2
+
+ 
+<S2>JC Johannes: Q: Why couldn't the leopard play hide and seek? - A: Because he was always spottet!
+
+<S2>JA Johannes: I like to hold hands at the movies....for some reason it always seems to startle strangers.
+
+<S2>JB Johannes: I hate Russian dolls, they're always so full of themselves.
+
+<S2>PB Johannes: Veni. Vidi. Vici.//swapped the server mode on server two
+quit
